@@ -12,9 +12,23 @@
 
 ## 安装
 
+### 方式一：ClawHub 安装（推荐）
+
+```bash
+clawhub install infoflow
+```
+
+安装后运行初始化：
+```bash
+cd ~/.openclaw/workspace/skills/infoflow
+python scripts/install.py
+```
+
+### 方式二：GitHub 克隆安装
+
 ```bash
 cd ~/.openclaw/workspace/skills
-git clone https://github.com/your-username/infoflow.git
+git clone https://github.com/zp75296383/xingqiao-skill.git infoflow
 cd infoflow
 python scripts/install.py
 ```

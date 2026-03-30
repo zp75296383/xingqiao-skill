@@ -26,13 +26,30 @@ metadata:
 
 ## 安装
 
-安装时自动生成 64 位 Token 并配置：
+### 方式一：ClawHub 安装（推荐）
 
 ```bash
+clawhub install infoflow
+```
+
+安装后运行初始化：
+```bash
+cd ~/.openclaw/workspace/skills/infoflow
 python scripts/install.py
 ```
 
-安装脚本会：
+### 方式二：GitHub 克隆安装
+
+```bash
+cd ~/.openclaw/workspace/skills
+git clone https://github.com/zp75296383/xingqiao-skill.git infoflow
+cd infoflow
+python scripts/install.py
+```
+
+### 初始化说明
+
+运行 `install.py` 时会：
 1. 生成唯一的 64 位 Skill Token
 2. 向星桥平台注册 Skill 账号
 3. 自动创建 `config.json`
