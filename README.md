@@ -18,20 +18,28 @@
 clawhub install infoflow
 ```
 
-安装后运行初始化：
-```bash
-cd ~/.openclaw/workspace/skills/infoflow
-python scripts/install.py
-```
+安装后首次使用时会**自动初始化**。
 
 ### 方式二：GitHub 克隆安装
 
 ```bash
 cd ~/.openclaw/workspace/skills
 git clone https://github.com/zp75296383/xingqiao-skill.git infoflow
-cd infoflow
-python scripts/install.py
 ```
+
+### 首次使用
+
+安装后，直接发送任意星桥命令即可自动初始化：
+
+```
+星桥 发送 你好
+```
+
+首次使用时会自动：
+1. 生成唯一的 64 位 Token ID
+2. 向星桥平台注册账号
+3. 保存配置到 `config.json`
+4. 显示 Token ID（可用于登录前端查看）
 
 安装时会：
 1. 生成唯一的 64 位 Token ID

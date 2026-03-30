@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import json
+import uuid
 import requests
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -17,12 +18,70 @@ CONFIG_PATH = Path(__file__).parent.parent / "config.json"
 API_BASE = "http://121.40.126.7"  # 云服务器
 
 
-def load_config():
-    """加载配置"""
-    if not CONFIG_PATH.exists():
-        print(f"错误: 配置文件不存在 ({CONFIG_PATH})")
-        print("请先运行安装脚本: python scripts/install.py")
+def generate_skill_token():
+    """生成唯一的 64 位 Skill Token"""
+    return uuid.uuid4().hex + uuid.uuid4().hex[:32]
+
+
+def register_skill_account(skill_token: str):
+    """向星桥平台登录（自动创建账户）"""
+    url = f"{API_BASE}/api/auth/login?token_id={skill_token}&auto_create=true"
+    
+    try:
+        response = requests.post(url, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("access_token"), data.get("encrypted_token_id"), data.get("user", {}).get("username")
+    except Exception:
+        pass
+    return None, None, None
+
+
+def auto_install():
+    """自动初始化（首次使用时自动运行）"""
+    print("=" * 50)
+    print("星桥 Skill 首次使用，正在初始化...")
+    print("=" * 50)
+    
+    # 生成 Token
+    skill_token = generate_skill_token()
+    print(f"[1/2] 生成 Token ID: {skill_token[:20]}...{skill_token[-8:]}")
+    
+    # 注册账号
+    print(f"[2/2] 注册账号...")
+    jwt_token, encrypted_token_id, username = register_skill_account(skill_token)
+    
+    if not jwt_token:
+        print("[错误] 初始化失败，请检查网络连接")
         sys.exit(1)
+    
+    print(f"      账号: {username}")
+    
+    # 保存配置
+    config = {
+        "token": jwt_token,
+        "token_id": skill_token,
+        "encrypted_token_id": encrypted_token_id,
+        "skill_username": username,
+        "api_base": API_BASE
+    }
+    
+    with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+    
+    print("\n" + "-" * 50)
+    print("[完成] 初始化成功！")
+    print(f"Token ID: {skill_token}")
+    print(f"前端地址: http://121.40.126.7")
+    print("-" * 50 + "\n")
+    
+    return config
+
+
+def load_config():
+    """加载配置（如果不存在则自动初始化）"""
+    if not CONFIG_PATH.exists():
+        return auto_install()
     
     with open(CONFIG_PATH, encoding='utf-8') as f:
         config = json.load(f)
